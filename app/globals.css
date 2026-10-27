@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --wa-font: "Segoe UI", "Helvetica Neue", Helvetica, "Lucida Grande", Arial, Ubuntu, Cantarell, "Fira Sans", sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: #1e2a4a;
+  color: #111b21;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Foco sempre visível (acessibilidade) */
+:focus-visible {
+  outline: 3px solid #f26b1d;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Fundo do chat: padrão de rabiscos de obra no tom do WhatsApp */
+.wa-wallpaper {
+  background-color: #efeae2;
+  background-image: url("/chat-pattern.svg");
+  background-size: 360px 360px;
+}
+
+.wa-font {
+  font-family: var(--wa-font);
+}
+
+/* Rabicho dos balões */
+.bubble-tail-in::before,
+.bubble-tail-out::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 8px;
+  height: 13px;
+}
+.bubble-tail-in::before {
+  left: -8px;
+  background: linear-gradient(to bottom left, #fff 50%, transparent 50%);
+}
+.bubble-tail-out::before {
+  right: -8px;
+  background: linear-gradient(to bottom right, #d9fdd3 50%, transparent 50%);
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

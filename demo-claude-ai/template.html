@@ -1,0 +1,968 @@
+<title>João da Obra</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap">
+<style>
+/* Layout: landing com o mascote → simulador fiel ao WhatsApp + painel do modo demo à direita.
+   Tema único de propósito: o chat imita o WhatsApp claro e a landing usa o terra do mascote. */
+:root {
+  --laranja: #F26B1D; --marinho: #1E2A4A; --barro: #C98A5E; --terra: #7a4930;
+  --wa-head: #075E54; --wa-bg: #EFEAE2; --wa-out: #D9FDD3; --wa-in: #FFFFFF; --wa-text: #111B21;
+  --wa-meta: #667781; --wa-link: #027EB5; --wa-tick: #53BDEB; --wa-send: #00A884; --wa-bar: #F0F2F5;
+  --panel: #F7F5F2; --line: rgba(17,27,33,.10);
+  --brand: "Nunito", "Segoe UI", system-ui, sans-serif;
+  --wa-font: "Segoe UI", "Helvetica Neue", Helvetica, Arial, Ubuntu, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+html, body { height: 100%; }
+body { background: var(--marinho); color: var(--wa-text); font-family: var(--brand); }
+* { box-sizing: border-box; }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--laranja); outline-offset: 2px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* ---------- Landing ---------- */
+#landing { position: relative; min-height: 100%; overflow: hidden; color: #fff;
+  background: radial-gradient(ellipse at 70% 60%, #C98A5E 0%, #a96f4c 45%, #7a4930 100%); }
+#landing .hero-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
+#landing .shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(59,31,16,.88), rgba(59,31,16,.2) 55%, transparent); }
+.land-wrap { position: relative; z-index: 1; min-height: 100vh; min-height: 100dvh; max-width: 1120px; margin: 0 auto; display: flex; flex-direction: column;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 28px; }
+.land-top { display: flex; justify-content: space-between; align-items: center; }
+.pill { background: rgba(30,42,74,.92); border-radius: 999px; padding: 6px 14px; font-weight: 800; font-size: 14px; letter-spacing: .02em; }
+.pill b { color: var(--laranja); }
+.land-copy { margin-top: auto; max-width: 560px; display: flex; flex-direction: column; gap: 14px; }
+.eyebrow { font-size: 13px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: #FFD9B8; margin: 0; }
+.land-copy h1 { font-size: clamp(44px, 9vw, 84px); line-height: .95; font-weight: 900; margin: 0; text-wrap: balance; text-shadow: 0 2px 12px rgba(0,0,0,.2); }
+.lead { font-size: 18px; font-weight: 600; line-height: 1.4; margin: 0; max-width: 46ch; }
+.sig { margin: 0; border-left: 4px solid var(--laranja); padding-left: 12px; font-style: italic; color: #FFE8D6; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; margin-top: 8px; }
+.cta { display: inline-flex; align-items: center; gap: 10px; background: var(--laranja); color: var(--marinho); border: 0; border-radius: 999px;
+  padding: 16px 28px; font-size: 18px; font-weight: 900; white-space: nowrap; box-shadow: 0 10px 24px rgba(0,0,0,.25); transition: transform .15s; }
+.cta:hover { transform: translateY(-2px); background: #ff7a2c; }
+.qr-card { display: flex; gap: 12px; align-items: center; background: rgba(255,255,255,.96); color: var(--marinho); border-radius: 16px; padding: 10px 14px 10px 10px; max-width: 320px; }
+.qr-card #qr { width: 84px; height: 84px; flex: none; display: grid; place-items: center; }
+.qr-card #qr img, .qr-card #qr canvas { width: 84px !important; height: 84px !important; }
+.qr-card p { margin: 0; font-size: 13px; line-height: 1.3; }
+.qr-card small { display: block; margin-top: 4px; font-size: 11px; color: rgba(30,42,74,.6); }
+.land-foot { margin-top: 22px; font-weight: 800; font-size: 14px; color: rgba(255,255,255,.85); }
+.land-note { font-size: 12.5px; color: rgba(255,255,255,.8); margin: 0; max-width: 52ch; }
+@media (min-width: 900px) {
+  #landing .hero-img { left: 30%; width: 70%; -webkit-mask-image: linear-gradient(to right, transparent, #000 28%); mask-image: linear-gradient(to right, transparent, #000 28%); }
+  #landing .shade { background: linear-gradient(to right, rgba(59,31,16,.55), transparent 60%); }
+  .land-copy { margin-block: auto; }
+}
+
+/* ---------- Simulador ---------- */
+#chat { height: 100%; display: flex; background: #d1d7db; }
+.shell { display: flex; width: 100%; height: 100%; max-width: 1400px; margin: 0 auto; background: #fff; overflow: hidden; }
+@media (min-width: 1024px) { #chat { padding: 16px; } .shell { border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,.25); } }
+.wa { flex: 1; min-width: 0; display: flex; flex-direction: column; font-family: var(--wa-font); position: relative; }
+.wa-head { height: 60px; flex: none; display: flex; align-items: center; gap: 10px; background: var(--wa-head); color: #fff;
+  padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px)); }
+.icon-btn { width: 40px; height: 40px; border-radius: 50%; border: 0; background: transparent; color: inherit; display: grid; place-items: center; flex: none; }
+.icon-btn:hover { background: rgba(255,255,255,.1); }
+.avatar { width: 40px; height: 40px; border-radius: 50%; flex: none; background: var(--barro); }
+.who { flex: 1; min-width: 0; line-height: 1.2; }
+.who strong { display: flex; gap: 4px; align-items: center; font-size: 16px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.who span { font-size: 13px; color: rgba(255,255,255,.8); }
+.demo-btn { border: 1px solid rgba(255,255,255,.45); background: transparent; color: #fff; border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.demo-btn:hover { background: rgba(255,255,255,.1); }
+
+.log { flex: 1; overflow-y: auto; background-color: var(--wa-bg); background-image: url("__PATTERN__"); background-size: 360px 360px;
+  padding-block: 14px; padding-left: max(12px, env(safe-area-inset-left, 0px)); padding-right: max(12px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 700px) { .log { padding-inline: 6%; } }
+.notice { margin: 0 auto 12px; width: fit-content; max-width: 100%; background: #ffeecd; color: #54656f; font-size: 12.5px; padding: 6px 12px; border-radius: 8px; text-align: center; box-shadow: 0 1px .5px rgba(11,20,26,.13); }
+.msgs { display: flex; flex-direction: column; gap: 3px; }
+.row { display: flex; flex-direction: column; }
+.row.gap { margin-top: 8px; }
+.b { position: relative; max-width: min(88%, 520px); border-radius: 8px; font-size: 14.2px; line-height: 19px; color: var(--wa-text);
+  box-shadow: 0 1px .5px rgba(11,20,26,.13); animation: pop .18s ease-out; overflow-wrap: anywhere; }
+@keyframes pop { from { opacity: .3; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.b.in { align-self: flex-start; background: var(--wa-in); }
+.b.out { align-self: flex-end; background: var(--wa-out); }
+.b.tail.in { border-top-left-radius: 0; } .b.tail.out { border-top-right-radius: 0; }
+.b.tail.in::before, .b.tail.out::before { content: ""; position: absolute; top: 0; width: 8px; height: 13px; }
+.b.tail.in::before { left: -8px; background: linear-gradient(to bottom left, var(--wa-in) 50%, transparent 50%); }
+.b.tail.out::before { right: -8px; background: linear-gradient(to bottom right, var(--wa-out) 50%, transparent 50%); }
+.pad { padding: 6px 8px 8px; }
+.meta { float: right; margin: 6px 0 0 8px; transform: translateY(4px); font-size: 11px; color: var(--wa-meta); display: inline-flex; gap: 2px; align-items: center; white-space: nowrap; }
+.meta svg { color: var(--wa-tick); }
+.act { display: flex; width: 100%; align-items: center; justify-content: center; gap: 6px; border: 0; border-top: 1px solid rgba(0,0,0,.08);
+  background: transparent; color: var(--wa-link); padding: 10px 12px; font-size: 14px; font-weight: 500; text-decoration: none; font-family: var(--wa-font); }
+.act:hover { background: rgba(0,0,0,.03); }
+.b strong { font-weight: 700; }
+.b a.lnk { color: var(--wa-link); word-break: break-all; }
+.b code { font-family: var(--mono); font-size: 12.5px; background: rgba(0,0,0,.05); padding: 0 3px; border-radius: 3px; }
+.card { width: min(288px, 70vw); }
+.thumb { height: 120px; display: grid; place-items: center; background: linear-gradient(135deg, #f8efe6, #f1e1d0); color: var(--terra); }
+.thumb span { font-family: var(--brand); font-weight: 800; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: rgba(122,73,48,.75); margin-top: 6px; }
+.badge { display: inline-block; background: var(--laranja); color: var(--marinho); font-weight: 800; font-size: 11px; border-radius: 4px; padding: 1px 6px; margin-bottom: 4px; font-family: var(--brand); }
+.price { margin-top: 4px; } .price s { color: var(--wa-meta); font-size: 13px; margin-right: 6px; } .price b { font-size: 15px; }
+.site { font-size: 12.5px; color: var(--wa-meta); }
+.map { height: 128px; position: relative; overflow: hidden; background: #e9e4da; }
+.map svg.streets { position: absolute; inset: 0; width: 100%; height: 100%; }
+.map .pin { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -100%); filter: drop-shadow(0 2px 2px rgba(0,0,0,.3)); }
+.place { font-weight: 600; color: var(--wa-link); }
+.addr { font-size: 13px; color: var(--wa-meta); }
+.doc { display: flex; gap: 10px; align-items: center; background: rgba(0,0,0,.04); border: 0; border-radius: 6px; padding: 10px; width: min(256px, 68vw); text-align: left; font-family: var(--wa-font); color: inherit; }
+.doc .pdf { width: 32px; height: 40px; border-radius: 2px; background: #E5534B; color: #fff; font-size: 9px; font-weight: 700; display: grid; place-items: center; flex: none; }
+.doc span { min-width: 0; } .doc .fn { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; } .doc .sz { font-size: 12px; color: var(--wa-meta); }
+.typing { display: flex; gap: 4px; padding: 12px 14px; }
+.typing i { width: 8px; height: 8px; border-radius: 50%; background: #8696a0; animation: blink 1.4s infinite both; }
+.typing i:nth-child(2) { animation-delay: .2s; } .typing i:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%, 80%, 100% { opacity: .2; } 40% { opacity: 1; } }
+
+.composer { flex: none; display: flex; gap: 8px; align-items: flex-end; background: var(--wa-bar); position: relative;
+  padding-block: 8px; padding-left: max(8px, env(safe-area-inset-left, 0px)); padding-right: max(8px, env(safe-area-inset-right, 0px)); }
+.composer .icon-btn { color: #54656f; width: 44px; height: 44px; }
+.composer .icon-btn:hover { background: rgba(0,0,0,.05); }
+#msg { flex: 1; min-width: 0; height: 44px; border: 0; border-radius: 8px; padding: 0 14px; font-size: 15px; font-family: var(--wa-font); color: var(--wa-text); background: #fff; }
+#msg:focus { outline: 2px solid var(--wa-head); }
+.send { width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--wa-send); color: #fff; display: grid; place-items: center; flex: none; }
+.send:disabled { opacity: .55; }
+.menu { position: absolute; bottom: 60px; left: max(8px, env(safe-area-inset-left, 0px)); width: 270px; background: #fff; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,.2); z-index: 5; animation: pop .15s ease-out; }
+.menu p { margin: 0; padding: 10px 14px; background: var(--wa-bar); font-size: 13px; font-weight: 600; color: #54656f; }
+.menu button { display: block; width: 100%; border: 0; background: none; text-align: left; padding: 10px 14px; font-size: 14px; font-family: var(--wa-font); }
+.menu button:hover { background: rgba(0,0,0,.04); }
+.menu small { color: var(--wa-meta); }
+
+/* Lista interativa e boleto (folhas) */
+.sheet-bg { position: absolute; inset: 0; z-index: 20; background: rgba(0,0,0,.4); display: flex; flex-direction: column; }
+.sheet { margin-top: auto; background: #fff; border-radius: 16px 16px 0 0; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); animation: pop .18s ease-out; font-family: var(--wa-font); }
+.sheet h3 { margin: 0; position: relative; text-align: center; font-weight: 500; font-size: 16px; padding: 14px 48px; border-bottom: 1px solid var(--line); }
+.sheet h3 button { position: absolute; left: 8px; top: 8px; }
+.sheet fieldset { border: 0; margin: 0; padding: 0 16px; }
+.sheet legend { padding-top: 12px; font-size: 13px; color: #008069; font-weight: 500; }
+.sheet label { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,.05); cursor: pointer; }
+.sheet label span { flex: 1; min-width: 0; } .sheet label small { display: block; color: var(--wa-meta); font-size: 13px; }
+.sheet input[type=radio] { width: 20px; height: 20px; accent-color: var(--wa-send); }
+.sheet .go { display: block; width: calc(100% - 32px); margin: 12px 16px 0; height: 44px; border: 0; border-radius: 999px; background: var(--wa-send); color: #fff; font-weight: 500; }
+.sheet .go:disabled { background: #e9edef; color: #8696a0; }
+.boleto { margin: auto; width: min(560px, calc(100% - 32px)); background: #fff; border-radius: 12px; overflow: hidden; font-family: var(--brand); color: var(--marinho); animation: pop .18s ease-out; }
+.boleto header { background: var(--marinho); color: #fff; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 18px; }
+.boleto header b { font-size: 22px; font-weight: 900; }
+.boleto .warn { background: var(--laranja); color: #fff; font-weight: 800; font-size: 13px; padding: 8px 18px; }
+.boleto dl { display: grid; grid-template-columns: 110px 1fr; gap: 6px 10px; padding: 16px 18px 6px; margin: 0; font-size: 14px; }
+.boleto dt { color: #667; } .boleto dd { margin: 0; font-weight: 800; }
+.boleto .linha { padding: 8px 18px; font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
+.boleto .bars { height: 44px; margin: 6px 18px 12px; background: repeating-linear-gradient(90deg, #000 0 2px, #fff 2px 3px, #000 3px 4px, #fff 4px 7px, #000 7px 10px, #fff 10px 11px); }
+.boleto footer { display: flex; justify-content: space-between; align-items: center; padding: 10px 18px 16px; font-size: 12px; color: #667; gap: 10px; flex-wrap: wrap; }
+.boleto footer button { border: 0; border-radius: 8px; background: var(--marinho); color: #fff; padding: 8px 14px; font-weight: 800; }
+
+/* ---------- Painel do modo demo ---------- */
+.panel { width: 420px; flex: none; border-left: 1px solid var(--line); background: var(--panel); display: none; flex-direction: column; color: var(--marinho); font-family: var(--brand); }
+@media (min-width: 1024px) { .panel.on { display: flex; } }
+@media (max-width: 1023px) { .panel.on { display: flex; position: fixed; inset: auto 0 0 0; height: 82%; width: auto; z-index: 30; border-radius: 16px 16px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,.3);
+  padding-bottom: env(safe-area-inset-bottom, 0px); } }
+.panel-top { padding: 16px 16px 12px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+.panel-top h2 { margin: 0; font-size: 19px; font-weight: 900; display: flex; justify-content: space-between; align-items: center; }
+.panel-top p { margin: 0; font-size: 13px; color: rgba(30,42,74,.72); }
+.lbl { font-size: 11.5px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: rgba(30,42,74,.6); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid rgba(30,42,74,.2); background: #fff; color: var(--marinho); border-radius: 999px; padding: 5px 11px; font-size: 13px; font-weight: 700; }
+.chip:hover { border-color: var(--laranja); background: #fff4ec; }
+.seg { display: inline-flex; border: 1px solid rgba(30,42,74,.2); border-radius: 999px; overflow: hidden; background: #fff; }
+.seg button { border: 0; background: transparent; padding: 5px 12px; font-size: 13px; font-weight: 700; color: var(--marinho); }
+.seg button[aria-pressed=true] { background: var(--marinho); color: #fff; }
+.engine { font-size: 12.5px; border-radius: 8px; padding: 8px 10px; background: #fff; border: 1px solid var(--line); }
+.engine b { color: var(--laranja); }
+details.data { font-size: 12.5px; } details.data summary { cursor: pointer; font-weight: 800; } details.data ul { margin: 6px 0 0; padding-left: 18px; }
+.logs { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+.turn { background: #fff; border-radius: 12px; padding: 10px 12px; box-shadow: 0 1px 2px rgba(0,0,0,.06); border: 1px solid var(--line); }
+.turn-h { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 800; }
+.turn-h span { flex: none; font-weight: 600; font-size: 11px; color: rgba(30,42,74,.55); font-variant-numeric: tabular-nums; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.tag { font-size: 11px; font-weight: 800; border-radius: 4px; padding: 1px 6px; background: rgba(30,42,74,.08); }
+.tag.i { background: var(--marinho); color: #fff; } .tag.e { background: var(--laranja); color: var(--marinho); } .tag.x { background: #fde2e1; color: #8a1c14; }
+.tool { margin-top: 8px; background: var(--panel); border-radius: 8px; padding: 6px 8px; font-size: 12.5px; }
+.tool summary { cursor: pointer; } .tool code { font-family: var(--mono); font-weight: 700; }
+.ok { color: #1b7a3c; font-weight: 800; font-size: 11px; } .err { color: #a3261b; font-weight: 800; font-size: 11px; }
+.tool .sum { display: block; color: rgba(30,42,74,.8); margin-top: 2px; }
+.tool pre { margin: 6px 0 0; white-space: pre-wrap; word-break: break-all; font-family: var(--mono); font-size: 11.5px; border-radius: 6px; padding: 8px; max-height: 220px; overflow: auto; }
+.tool pre.p { background: var(--marinho); color: #ffe0c7; } .tool pre.r { background: #fff; border: 1px solid var(--line); }
+.empty { font-size: 13px; color: rgba(30,42,74,.6); margin: 0; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>
+
+<section id="landing" aria-label="Apresentação">
+  <img class="hero-img" src="__HERO__" alt="João da Obra: joão-de-barro de capacete laranja com o t da Tumelero, jardineira azul-marinho e colher de pedreiro, acenando">
+  <div class="shade"></div>
+  <div class="land-wrap">
+    <div class="land-top"><span class="pill">tumelero <b>60 anos</b></span></div>
+    <div class="land-copy">
+      <p class="eyebrow">Agora no WhatsApp da Tumelero</p>
+      <h1>João da Obra</h1>
+      <p class="lead">O joão-de-barro que entende de obra. Ele acha o produto certo, faz a conta dos cupons da Strada, mostra a loja mais perto e acompanha teu pedido.</p>
+      <p class="sig">João da Obra. Quem entende de construir, vem pra Tumelero.</p>
+      <div class="cta-row">
+        <button class="cta" id="start" type="button">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></svg>
+          Conversar com o João
+        </button>
+        <div class="qr-card">
+          <div id="qr" aria-label="QR code para falar com o João no WhatsApp"></div>
+          <p><strong>No celular?</strong><br>Aponte a câmera e fale com o João no WhatsApp<small>QR provisório · número oficial em ativação</small></p>
+        </div>
+      </div>
+      <p class="land-note">Simulador de demonstração. Pedidos, cartão e cupons são fictícios. O João responde com o Claude da sua conta: na primeira mensagem o claude.ai pede sua permissão.</p>
+    </div>
+    <p class="land-foot">Ninguém facilita tanto.</p>
+  </div>
+</section>
+
+<section id="chat" hidden aria-label="Simulador do WhatsApp">
+  <div class="shell">
+    <div class="wa">
+      <header class="wa-head">
+        <button class="icon-btn" id="back" type="button" aria-label="Voltar para a apresentação">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 4 13.4 5.4 7.8 11H20v2H7.8l5.6 5.6L12 20l-8-8z"/></svg>
+        </button>
+        <img class="avatar" src="__AVATAR__" alt="">
+        <div class="who">
+          <strong>João da Obra · Tumelero
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-label="conta comercial verificada"><path fill="#25D366" d="m12 1 2.6 2.1 3.3-.3.9 3.2 2.9 1.6-1.2 3.1 1.2 3.1-2.9 1.6-.9 3.2-3.3-.3L12 23l-2.6-2.1-3.3.3-.9-3.2-2.9-1.6L3.5 13 2.3 9.9l2.9-1.6.9-3.2 3.3.3z"/><path fill="#fff" d="m10.6 15.6-3.2-3.2 1.4-1.4 1.8 1.8 4.6-4.6 1.4 1.4z"/></svg>
+          </strong>
+          <span id="status" aria-live="polite">online</span>
+        </div>
+        <button class="demo-btn" id="demoToggle" type="button" aria-pressed="true">Modo demo</button>
+        <button class="icon-btn" id="restart" type="button" aria-label="Começar nova conversa" title="Nova conversa">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></svg>
+        </button>
+      </header>
+      <div class="log" id="log" role="log" aria-live="polite">
+        <div class="notice">🔒 Simulador do WhatsApp. Pedidos, cartão e cupons são fictícios.</div>
+        <div class="msgs" id="msgs"></div>
+      </div>
+      <form class="composer" id="composer">
+        <button class="icon-btn" id="clip" type="button" aria-label="Anexar: enviar localização" aria-expanded="false">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5 6v11.5a4 4 0 0 1-8 0V5a2.5 2.5 0 0 1 5 0v10.5a1 1 0 0 1-2 0V6H10v9.5a2.5 2.5 0 0 0 5 0V5a4 4 0 0 0-8 0v12.5a5.5 5.5 0 0 0 11 0V6h-1.5z"/></svg>
+        </button>
+        <label class="sr" for="msg">Mensagem</label>
+        <input id="msg" autocomplete="off" maxlength="1500" placeholder="Mensagem">
+        <button class="send" id="send" type="submit" aria-label="Enviar mensagem" disabled>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M1.1 21.8 23 12 1.1 2.2 1 9.8l15.7 2.2L1 14.2z"/></svg>
+        </button>
+        <div class="menu" id="locMenu" hidden role="menu"></div>
+      </form>
+      <div class="sheet-bg" id="sheetBg" hidden></div>
+    </div>
+
+    <aside class="panel on" id="panel" aria-label="Painel do modo demo">
+      <div class="panel-top">
+        <h2>Modo demo <button class="icon-btn" id="panelClose" type="button" aria-label="Fechar painel" style="width:32px;height:32px">✕</button></h2>
+        <p>A ferramenta que o João escolheu e os parâmetros de cada resposta.</p>
+        <div class="engine" id="engine">Conectando ao Claude…</div>
+        <div>
+          <div class="lbl">Velocidade do João</div>
+          <div class="seg" role="group" aria-label="Velocidade do João" style="margin-top:6px">
+            <button type="button" id="tierQuick" aria-pressed="true">Rápido</button>
+            <button type="button" id="tierDefault" aria-pressed="false">Caprichado</button>
+          </div>
+        </div>
+        <div class="lbl">Cenários de teste</div>
+        <div class="chips" id="scenarios"></div>
+        <details class="data"><summary>Dados fictícios para testar</summary><ul id="testData"></ul></details>
+      </div>
+      <div class="logs" id="logs"><p class="empty">As chamadas de ferramenta aparecem aqui.</p></div>
+    </aside>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+"use strict";
+// ======================================================================
+// Dados (seed do projeto joao-da-obra) e tabelas de geocodificação do RS
+// ======================================================================
+const DATA = __DATA__;
+const CEP_PREFIX = __CEP__;   // 3 primeiros dígitos do CEP → [cidade, lat, lng] (aproximado)
+const CITIES = __CITIES__;    // cidade → [lat, lng]
+const EXACT_CEP = { "93010001": ["Rua Independência, Centro, São Leopoldo", "São Leopoldo", -29.76028, -51.14722] };
+const WA_NUMBER = "5551998111390";
+
+// ======================================================================
+// Utilidades
+// ======================================================================
+const TZ = "America/Sao_Paulo";
+const WD = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+const WD_PT = { sun: "domingo", mon: "segunda", tue: "terça", wed: "quarta", thu: "quinta", fri: "sexta", sat: "sábado" };
+const fold = (s) => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const brl = (n) => Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const clip = (s, n) => { s = String(s ?? ""); return [...s].length <= n ? s : [...s].slice(0, n - 1).join("").trimEnd() + "…"; };
+function localParts(d) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", weekday: "short", hourCycle: "h23" }).formatToParts(d).map((x) => [x.type, x.value]));
+  return { date: `${p.year}-${p.month}-${p.day}`, month: +p.month, weekday: WD[["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(p.weekday)], minutes: +p.hour * 60 + +p.minute, hh: p.hour, mm: p.minute };
+}
+const DAY = 86400000, HOUR = 3600000;
+const isoDay = (offset) => localParts(new Date(Date.now() + offset * DAY)).date;
+const fmtDate = (iso) => { const [y, m, d] = iso.slice(0, 10).split("-"); return `${d}/${m}/${y}`; };
+function fmtDateTime(iso) {
+  const p = Object.fromEntries(new Intl.DateTimeFormat("pt-BR", { timeZone: TZ, day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(new Date(iso)).map((x) => [x.type, x.value]));
+  return `${p.day}/${p.month} às ${p.hour}h${p.minute}`;
+}
+function haversineKm(a, b) {
+  const r = (x) => (x * Math.PI) / 180, dLat = r(b.lat - a.lat), dLng = r(b.lng - a.lng);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * 6371.0088 * Math.asin(Math.min(1, Math.sqrt(h)));
+}
+const fmtKm = (km) => km < 1 ? `${Math.max(50, Math.round(km * 20) * 50)} m` : km < 10 ? `${km.toFixed(1).replace(".", ",")} km` : `${Math.round(km)} km`;
+function isValidCpf(s) {
+  const c = String(s).replace(/\D/g, "");
+  if (c.length !== 11 || /^(\d)\1{10}$/.test(c)) return false;
+  const dv = (n) => { let t = 0; for (let i = 0; i < n; i++) t += +c[i] * (n + 1 - i); const r = (t * 10) % 11; return r === 10 ? 0 : r; };
+  return dv(9) === +c[9] && dv(10) === +c[10];
+}
+const maskCpf = (s) => { const d = String(s).replace(/\D/g, ""); return d.length === 11 ? `***.${d.slice(3, 6)}.${d.slice(6, 9)}-**` : "***"; };
+function luhn(d) { let s = 0, dbl = false; for (let i = d.length - 1; i >= 0; i--) { let n = +d[i]; if (dbl) { n *= 2; if (n > 9) n -= 9; } s += n; dbl = !dbl; } return s % 10 === 0; }
+function maskSensitive(t) {
+  const found = new Set();
+  t = t.replace(/(?<!\d)(?:\d[ .-]?){12,18}\d(?!\d)/g, (m) => { const d = m.replace(/\D/g, ""); if (d.length < 13 || !luhn(d)) return m; found.add("cartão"); return `[cartão ocultado •••• ${d.slice(-4)}]`; });
+  t = t.replace(/\b(cvv|cvc|cvv2|c[oó]d(?:igo)?\.?\s+(?:de\s+)?seguran[cç]a)\b(\s*(?:[ée]|:|=|-)?\s*)(\d{3,4})\b/gi, (_m, a, b) => { found.add("CVV"); return `${a}${b}[ocultado]`; });
+  t = t.replace(/\b(senha|password|pin)\b(\s*(?:do cart[aã]o\s*)?(?:[ée]|:|=|-)?\s*)(\S+)/gi, (_m, a, b) => { found.add("senha"); return `${a}${b}[ocultado]`; });
+  return { text: t, found: [...found] };
+}
+const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+
+// ======================================================================
+// Dados "vivos": datas relativas ao dia de hoje
+// ======================================================================
+const NOW = Date.now();
+const STORES = DATA.stores;
+const PRODUCTS = DATA.products;
+const RULES = [...DATA.rules].sort((a, b) => a.sort_order - b.sort_order);
+const OFERTAS = DATA.ofertas.map((o) => ({ ...o, date: isoDay(o.dayOffset) }));
+const ORDERS = DATA.orders.map((o) => ({ ...o, timeline: o.steps.map(([status, h]) => ({ status, at: new Date(NOW - h * HOUR).toISOString() })), eta: o.etaDays === null ? null : isoDay(o.etaDays) }));
+const CARDS = DATA.cards.map((c) => ({ ...c,
+  invoice: { amount: c.invoice.amount, due: isoDay(c.invoice.dueInDays), status: c.invoice.status },
+  debts: c.open_debts.map((d) => ({ description: d.description, amount: d.amount, due: isoDay(d.dueInDays) })),
+  purchases: c.recent_purchases.map((p) => ({ date: isoDay(-p.daysAgo), description: p.description, amount: p.amount, installments: p.installments })) }));
+const HOLIDAYS = DATA.holidays;
+const STATUS_LABEL = { pagamento_aprovado: "Pagamento aprovado", separando: "Separando no estoque", saiu_para_entrega: "Saiu para entrega", entregue: "Entregue", retirada_disponivel: "Retirada na loja disponível", atrasado: "Atrasado" };
+const CATEGORY_LINKS = { "Pisos e Revestimentos": "/pisos-e-revestimentos", "Tintas": "/tintas", "Ferramentas": "/ferramentas", "Elétrica": "/eletrica", "Hidráulica": "/hidraulica", "Materiais de Construção": "/materiais-de-construcao", "Climatização": "/climatizacao", "Banheiro": "/banheiro", "Jardim": "/area-externa/jardim", "Outlet": "/outlet-tumelero", "Nossas lojas": "/nossas-lojas" };
+
+// ======================================================================
+// Horário das lojas
+// ======================================================================
+const fmtH = (s) => { const [h, m] = s.split(":"); return `${+h}h${m === "00" ? "" : m}`; };
+const fmtRanges = (rs) => rs.map(([a, b]) => `${fmtH(a)} às ${fmtH(b)}`).join(" e ");
+function todayHours(s) {
+  const p = localParts(new Date());
+  const hol = HOLIDAYS.find((h) => h.date === p.date && (h.scope !== "municipal" || h.city === s.city));
+  const pre = hol ? `hoje (feriado: ${hol.name})` : `hoje (${WD_PT[p.weekday]})`;
+  if (!s.hours) return { label: `${pre}: horário a confirmar com a loja`, open: null };
+  let rs;
+  if (hol) { rs = s.hours.holiday; if (!rs) return { label: `${pre}: confirme com a loja se abre no feriado`, open: null }; }
+  else { const sea = (s.hours.seasonal || []).find((x) => x.day === p.weekday && x.months.includes(p.month)); rs = sea ? sea.ranges : (s.hours.week[p.weekday] || []); }
+  if (!rs.length) return { label: `${pre}: fechada`, open: false };
+  const toM = (x) => { const [h, m] = x.split(":"); return +h * 60 + +m; };
+  return { label: `${pre}: ${fmtRanges(rs)}`, open: rs.some(([a, b]) => p.minutes >= toM(a) && p.minutes < toM(b)) };
+}
+
+// ======================================================================
+// Geocodificação offline (a página não acessa APIs externas)
+// ======================================================================
+function geoByCep(cep) {
+  const d = String(cep).replace(/\D/g, "");
+  if (d.length !== 8) return null;
+  if (EXACT_CEP[d]) { const [label, city, lat, lng] = EXACT_CEP[d]; return { lat, lng, label, city }; }
+  const hit = CEP_PREFIX[d.slice(0, 3)];
+  if (!hit) return null;
+  const c = CITIES[hit[0]];
+  return { lat: c ? c[0] : hit[1], lng: c ? c[1] : hit[2], label: `${hit[0]}/RS (pela faixa do CEP)`, city: hit[0] };
+}
+function geoByText(q) {
+  const f = fold(q);
+  let best = null;
+  for (const name of Object.keys(CITIES)) { const n = fold(name); if (f.includes(n) && (!best || n.length > fold(best).length)) best = name; }
+  if (!best) for (const [, v] of Object.entries(CEP_PREFIX)) { const n = fold(v[0]); if (f.includes(n)) { best = v[0]; break; } }
+  if (!best) return null;
+  const c = CITIES[best] || (() => { const v = Object.values(CEP_PREFIX).find((x) => x[0] === best); return [v[1], v[2]]; })();
+  return { lat: c[0], lng: c[1], label: `${best}/RS`, city: best };
+}
+
+// ======================================================================
+// Estado da conversa
+// ======================================================================
+let conv = freshConv();
+function freshConv() {
+  const mem = store.get("joao-mem") || {};
+  return { name: mem.name || null, city: mem.city || null, cep: mem.cep || null, lat: null, lng: null, status: "ativa", failed: 0, cardFails: 0, history: [], cupons: {} };
+}
+const saveMem = () => store.set("joao-mem", { name: conv.name, city: conv.city, cep: conv.cep });
+
+// Anexos: as ferramentas preparam cards a partir do dado real; o modelo só cita o id.
+let attach = null;
+function newAttach() { const items = new Map(), cnt = {}; return { add(p, msgs) { cnt[p] = (cnt[p] || 0) + 1; const id = p + cnt[p]; items.set(id, msgs); return id; }, get: (id) => items.get(String(id).trim().toUpperCase()), has: (id) => items.has(String(id).trim().toUpperCase()) }; }
+
+// ======================================================================
+// Ferramentas (mesmas do projeto, rodando na página)
+// ======================================================================
+function calcCupons(total, diaT = 0) {
+  if (!(total >= 0) || !(diaT >= 0)) throw new Error("valores inválidos");
+  if (diaT > total) throw new Error("valor_dia_t não pode ser maior que valor_total");
+  const t = Math.round(total * 100), d = Math.round(diaT * 100), pts = t - d + 2 * d, c = Math.floor(pts / 30000);
+  return { cupons: c, valor_normal: (t - d) / 100, valor_dia_t: d / 100, valor_considerado: pts / 100, falta_para_proximo: (30000 - (pts - c * 30000)) / 100 };
+}
+function scoreProduct(p, terms) {
+  const name = fold(p.name), kws = p.keywords.map(fold), cat = fold(`${p.category} ${p.subcategory || ""}`);
+  let s = 0;
+  for (const raw of terms) { const t = fold(raw).trim(); if (!t) continue;
+    if (name.includes(t)) s += 5; if (kws.some((k) => k === t)) s += 4; else if (kws.some((k) => k.includes(t) || t.includes(k))) s += 2;
+    if (cat.includes(t)) s += 1; for (const w of t.split(/\s+/).filter((w) => w.length > 3)) if (name.includes(w)) s += 1; }
+  return s;
+}
+function storeCard(s, km, hoursLabel) {
+  const lines = [`*${s.name}*`, `${s.address}${s.neighborhood ? `, ${s.neighborhood}` : ""} — ${s.city}`, `🕗 ${hoursLabel[0].toUpperCase()}${hoursLabel.slice(1)}`,
+    s.whatsapp.length ? `💬 WhatsApp: ${s.whatsapp.join(" / ")}` : `📞 ${s.phone || "(51) 3371-9290"}`, ...(km != null ? [`📍 Uns ${fmtKm(km)} de você`] : [])];
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${s.name}, ${s.address}, ${s.city} - RS`)}`;
+  return [{ type: "location", name: s.name, address: `${s.address}, ${s.city} - RS`, lat: s.lat, lng: s.lng }, { type: "cta", text: lines.join("\n"), label: "Como chegar", url }];
+}
+function amountDue(c) { const due = c.debts.filter((d) => d.due <= c.invoice.due); return due.length ? Math.round(due.reduce((a, d) => a + d.amount, 0) * 100) / 100 : (c.invoice.status === "paga" ? 0 : c.invoice.amount); }
+function fakeLinha(seed, amount) {
+  let h = 0; for (const ch of seed) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  let d = ""; while (d.length < 30) { h = (h * 1103515245 + 12345) >>> 0; d += String(h % 100000).padStart(5, "0"); }
+  return `99990.${d.slice(0, 5)} ${d.slice(5, 10)}.${d.slice(10, 16)} ${d.slice(16, 21)}.${d.slice(21, 26)} 9 ${d.slice(26, 30)}${String(Math.round(amount * 100)).padStart(10, "0")}`;
+}
+function fakePix(amount, txid) {
+  const emv = (id, v) => id + String(v.length).padStart(2, "0") + v;
+  const acc = emv("00", "br.gov.bcb.pix") + emv("01", "pix-demo@tumelero.invalid") + emv("02", "DEMONSTRACAO - NAO PAGAR");
+  const p = emv("00", "01") + emv("26", acc) + emv("52", "0000") + emv("53", "986") + emv("54", amount.toFixed(2)) + emv("58", "BR") + emv("59", "TUMELERO DEMO") + emv("60", "PORTO ALEGRE") + emv("62", emv("05", txid.slice(0, 25))) + "6304";
+  let crc = 0xffff; for (const b of new TextEncoder().encode(p)) { crc ^= b << 8; for (let i = 0; i < 8; i++) crc = crc & 0x8000 ? ((crc << 1) ^ 0x1021) & 0xffff : (crc << 1) & 0xffff; }
+  return p + crc.toString(16).toUpperCase().padStart(4, "0");
+}
+const ESCALATION = "Vou chamar um colega da Tumelero pra te ajudar, tá? Já já alguém fala contigo. 🙌";
+
+const TOOLS = [
+  { name: "buscar_produtos",
+    description: "Busca produtos reais do site da Tumelero (catálogo do site, retrato de 27/10/2026). Traduza a necessidade em 1 a 3 termos curtos de produto (goteira → \"manta líquida\", \"impermeabilizante\", \"telha\"). Devolve produtos com id (P1, P2...) para citar em anexos.",
+    inputSchema: { type: "object", properties: { termos: { type: "array", items: { type: "string" }, minItems: 1, maxItems: 3 } }, required: ["termos"] },
+    run({ termos }) {
+      const ts = (Array.isArray(termos) ? termos : [termos]).map(String).slice(0, 3);
+      const hits = PRODUCTS.map((p) => ({ p, s: scoreProduct(p, ts) })).filter((x) => x.s > 0).sort((a, b) => b.s - a.s).slice(0, 6).map((x) => x.p);
+      if (!hits.length) return { data: { produtos: [], aviso: "Nada encontrado. Diga com leveza e mande o link de uma categoria (só estas).", categorias: Object.fromEntries(Object.entries(CATEGORY_LINKS).map(([k, v]) => [k, "https://www.tumelero.com.br" + v])) }, summary: `nenhum produto para ${ts.join(", ")}` };
+      const produtos = hits.map((p) => ({ id: attach.add("P", [{ type: "product", product: { name: p.name, price: p.price, link: p.link, category: p.subcategory || p.category } }]), nome: p.name, marca: p.brand, preco: brl(p.price), categoria: p.subcategory || p.category }));
+      return { data: { fonte: "catálogo do site (preços de 27/10/2026: sugira conferir no link)", produtos, dica: "Escolha de 1 a 3 que resolvem e cite os ids em anexos." }, summary: `${produtos.length} produto(s): ${hits.slice(0, 3).map((p) => p.name).join(" · ")}` };
+    } },
+  { name: "consultar_promocao",
+    description: "Devolve os trechos do regulamento da Promoção Tumelero 60 Anos (sorteio da Fiat Strada) que respondem à dúvida. Responda SOMENTE com base neles.",
+    inputSchema: { type: "object", properties: { pergunta: { type: "string" } }, required: ["pergunta"] },
+    run({ pergunta }) {
+      const q = fold(pergunta);
+      const sc = RULES.map((r) => { let s = 0; for (const k of r.keywords) if (q.includes(fold(k))) s += 2; for (const w of q.split(/\W+/).filter((x) => x.length > 3)) if (fold(r.content).includes(w)) s += 1; return { r, s }; }).sort((a, b) => b.s - a.s);
+      const rel = sc.filter((x) => x.s > 0).slice(0, 4).map((x) => x.r);
+      const trechos = (rel.length ? rel : RULES).map((r) => ({ titulo: r.title, texto: r.content }));
+      if (!rel.some((r) => r.slug === "aviso")) trechos.push({ titulo: "Aviso", texto: RULES.find((r) => r.slug === "aviso").content });
+      return { data: { trechos }, summary: `${trechos.length} trecho(s): ${trechos.map((t) => t.titulo).join(", ")}` };
+    } },
+  { name: "calcular_cupons",
+    description: "Calcula os cupons do sorteio da Strada. valor_total = valor TOTAL da nota (incluindo o Dia T); valor_dia_t = a parte em Ofertas do Dia T (conta em dobro). Nunca faça a conta de cabeça.",
+    inputSchema: { type: "object", properties: { valor_total: { type: "number" }, valor_dia_t: { type: "number" } }, required: ["valor_total"] },
+    run({ valor_total, valor_dia_t }) {
+      const r = calcCupons(Number(valor_total), Number(valor_dia_t || 0));
+      return { data: { ...r, conta: `(${brl(r.valor_normal)} + 2 × ${brl(r.valor_dia_t)}) ÷ 300 = ${r.cupons} cupom(ns)`, lembrete: "O saldo que sobra não acumula para outra nota." }, summary: `${brl(valor_total)} (Dia T ${brl(valor_dia_t || 0)}) → ${r.cupons} cupom(ns)` };
+    } },
+  { name: "ofertas_dia_t_hoje",
+    description: "Lista as Ofertas do Dia T de hoje (contam em dobro nos cupons), com ids (P1...) para citar em anexos.",
+    inputSchema: { type: "object", properties: {} },
+    run() {
+      const today = isoDay(0);
+      let list = OFERTAS.filter((o) => o.date === today), date = today;
+      if (!list.length) { const next = OFERTAS.map((o) => o.date).filter((d) => d >= today).sort()[0]; if (next) { list = OFERTAS.filter((o) => o.date === next); date = next; } }
+      if (!list.length) return { data: { ofertas: [], aviso: "Sem ofertas cadastradas. Sugira o outlet: https://www.tumelero.com.br/outlet-tumelero" }, summary: "nenhuma oferta" };
+      const ofertas = list.map((o) => ({ id: attach.add("P", [{ type: "product", product: { name: o.product_name, price: o.price, listPrice: o.normal_price, link: o.link, badge: "Oferta do Dia T" } }]), produto: o.product_name, preco: brl(o.price), preco_normal: o.normal_price ? brl(o.normal_price) : null }));
+      return { data: { data: fmtDate(date), e_hoje: date === today, ofertas }, summary: `${ofertas.length} oferta(s) em ${fmtDate(date)}` };
+    } },
+  { name: "cadastrar_nota",
+    description: "Cadastra uma nota fiscal na promoção (SIMULADO) e gera os números da sorte. Precisa de CPF e número da NF; explique que servem só para registrar os cupons.",
+    inputSchema: { type: "object", properties: { cpf: { type: "string" }, numero_nf: { type: "string" } }, required: ["cpf", "numero_nf"] },
+    run({ cpf, numero_nf }) {
+      if (!isValidCpf(cpf)) throw new Error("CPF inválido (dígitos verificadores não conferem). Peça para conferir.");
+      const nf = String(numero_nf).replace(/\D/g, ""); if (nf.length < 3) throw new Error("Número da nota inválido.");
+      if (conv.cupons[nf]) return { data: { ok: true, ja_cadastrada: true, numeros_da_sorte: conv.cupons[nf] }, summary: `nota ${nf} já cadastrada` };
+      let h = 7; for (const ch of nf) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+      const valor = Math.round((180 + (h % 1500) + (h % 100) / 100) * 100) / 100, diaT = h % 3 === 0 ? Math.round(valor * 30) / 100 : 0;
+      const { cupons } = calcCupons(valor, diaT);
+      if (!cupons) return { data: { ok: true, valor_nota: brl(valor), cupons: 0, aviso: "A nota não chegou a R$ 300; o saldo não acumula." }, summary: `nota ${nf}: ${brl(valor)} → 0` };
+      const nums = []; while (nums.length < cupons) { const n = String(Math.floor(Math.random() * 1e6)).padStart(6, "0"); if (!nums.includes(n)) nums.push(n); }
+      conv.cupons[nf] = nums;
+      const lp = localParts(new Date());
+      return { data: { ok: true, simulado: true, cpf: maskCpf(cpf), valor_nota: brl(valor), valor_dia_t: diaT ? brl(diaT) : undefined, cupons, numeros_da_sorte: nums, sorteio: `${lp.date.slice(5, 7)}/${lp.date.slice(0, 4)}, pela Loteria Federal do último sábado do mês` }, summary: `nota ${nf}: ${brl(valor)} → ${cupons} cupom(ns) ${nums.join(", ")}` };
+    } },
+  { name: "buscar_loja_proxima",
+    description: "Encontra a loja Tumelero mais próxima por CEP, cidade/endereço ou pela localização enviada (usar_localizacao_enviada=true). Preencha só um. Devolve a mais perto (e uma 2ª opção se estiver a menos de 15 km), com ids (L1...) para citar em anexos.",
+    inputSchema: { type: "object", properties: { cep: { type: "string" }, cidade_ou_endereco: { type: "string" }, usar_localizacao_enviada: { type: "boolean" } } },
+    run({ cep, cidade_ou_endereco, usar_localizacao_enviada }) {
+      let o = null;
+      if (usar_localizacao_enviada) { if (conv.lat == null) throw new Error("Nenhuma localização recebida. Peça o CEP ou a cidade."); o = { lat: conv.lat, lng: conv.lng, label: "localização enviada", city: null }; }
+      else if (cep) { if (String(cep).replace(/\D/g, "").length !== 8) throw new Error("CEP precisa ter 8 dígitos."); o = geoByCep(cep); }
+      else if (cidade_ou_endereco) o = geoByText(cidade_ou_endereco);
+      else throw new Error("Informe cep, cidade_ou_endereco ou usar_localizacao_enviada.");
+      if (!o) return { data: { encontrado: false, aviso: "Não localizei. Peça o nome da cidade (RS) ou outro CEP.", lojas_existentes: STORES.map((s) => `${s.name} (${s.city})`), lista_completa: "https://www.tumelero.com.br/nossas-lojas" }, summary: `não localizou ${cep || cidade_ou_endereco}` };
+      const ranked = STORES.filter((s) => s.active).map((s) => ({ s, km: haversineKm(o, s) })).sort((a, b) => a.km - b.km);
+      const picks = ranked.slice(0, 2).filter((x, i) => i === 0 || x.km < 15);
+      const lojas = picks.map(({ s, km }) => { const h = todayHours(s); return { id: attach.add("L", storeCard(s, km, h.label)), nome: s.name, cidade: s.city, distancia: fmtKm(km), horario: h.label, aberta_agora: h.open }; });
+      if (o.city && !conv.city) { conv.city = o.city; saveMem(); }
+      if (cep && !conv.cep) { conv.cep = String(cep).replace(/\D/g, ""); saveMem(); }
+      return { data: { encontrado: true, origem: o.label, lojas, atendimento_geral: { whatsapp: "(51) 99811-1390", telefone: "(51) 3371-9290" }, dica: "Cite os ids em anexos: o card já traz endereço, horário de hoje, WhatsApp, distância e Como chegar." }, summary: `${o.label} → ${lojas.map((l) => `${l.nome} (${l.distancia})`).join(", ")}` };
+    } },
+  { name: "rastrear_pedido",
+    description: "Consulta um pedido (SIMULADO) pelo número ou pelo CPF. Mostre linha do tempo curta (•) e previsão. Se atrasado, peça desculpas com sinceridade e ofereça atendente.",
+    inputSchema: { type: "object", properties: { numero_pedido: { type: "string" }, cpf: { type: "string" } } },
+    run({ numero_pedido, cpf }) {
+      const today = isoDay(0);
+      const desc = (o) => ({ pedido: o.order_number, cliente: o.customer_name.split(" ")[0], status_atual: STATUS_LABEL[o.status], atrasado: o.status === "atrasado", tipo: o.delivery_type,
+        previsao: o.status === "entregue" ? "já entregue" : o.delivery_type === "retirada" ? `retirada na loja ${o.store_slug || ""}` : o.eta ? (o.eta === today ? "hoje" : fmtDate(o.eta)) : "sem previsão",
+        linha_do_tempo: o.timeline.map((t) => `${fmtDateTime(t.at)} — ${STATUS_LABEL[t.status]}`), itens: o.items.map((i) => `${i.qty}× ${i.name}`), total: brl(o.total) });
+      if (numero_pedido) { const o = ORDERS.find((x) => x.order_number === String(numero_pedido).replace(/\D/g, ""));
+        return o ? { data: { encontrado: true, ...desc(o) }, summary: `pedido ${o.order_number}: ${STATUS_LABEL[o.status]}` } : { data: { encontrado: false, aviso: "Pedido não encontrado. Peça para conferir o número ou o CPF." }, summary: `pedido ${numero_pedido} não encontrado` }; }
+      if (cpf) { if (!isValidCpf(cpf)) throw new Error("CPF inválido."); const l = ORDERS.filter((x) => x.cpf === String(cpf).replace(/\D/g, ""));
+        return l.length ? { data: { encontrado: true, pedidos: l.slice(0, 3).map(desc) }, summary: `${l.length} pedido(s) no CPF` } : { data: { encontrado: false, aviso: "Nenhum pedido nesse CPF." }, summary: "nenhum pedido no CPF" }; }
+      throw new Error("Informe numero_pedido ou cpf.");
+    } },
+  { name: "consultar_cartao_tumelero",
+    description: "Cartão Tumelero (SIMULADO). Exige CPF + data de nascimento (AAAA-MM-DD). Ações: resumo, fatura, debitos, limite, compras, boleto (2ª via) ou pix (copia-e-cola). NUNCA peça senha, CVV ou número do cartão. Boleto e Pix voltam com id (D1...) para anexos.",
+    inputSchema: { type: "object", properties: { cpf: { type: "string" }, data_nascimento: { type: "string", description: "AAAA-MM-DD" }, acao: { type: "string", enum: ["resumo", "fatura", "debitos", "limite", "compras", "boleto", "pix"] } }, required: ["cpf", "data_nascimento", "acao"] },
+    run({ cpf, data_nascimento, acao }) {
+      if (conv.cardFails >= 3) return { data: { verificado: false, bloqueado: true, aviso: "Muitas tentativas. Encaminhe para um atendente (falar_com_humano)." }, summary: "bloqueado por tentativas" };
+      if (!isValidCpf(cpf)) throw new Error("CPF inválido. Peça para conferir.");
+      const d = String(cpf).replace(/\D/g, ""), c = CARDS.find((x) => x.cpf === d && x.birth_date === String(data_nascimento).slice(0, 10));
+      if (!c) { conv.cardFails++; return { data: { verificado: false, tentativas_restantes: 3 - conv.cardFails, aviso: "CPF e nascimento não conferem. Peça para conferir sem dizer qual está errado." }, summary: "verificação falhou" }; }
+      conv.cardFails = 0;
+      const today = isoDay(0), base = { verificado: true, titular: c.name.split(" ")[0], cartao_final: c.last4, simulado: true };
+      const fatura = { valor: brl(c.invoice.amount), vencimento: fmtDate(c.invoice.due), vencida: c.invoice.due < today && c.invoice.status !== "paga", situacao: c.invoice.status };
+      const limite = { disponivel: brl(c.limit_available), total: brl(c.limit_total) };
+      const debitos = c.debts.map((x) => ({ descricao: x.description, valor: brl(x.amount), vencimento: fmtDate(x.due), vencido: x.due < today }));
+      const compras = c.purchases.map((p) => ({ data: fmtDate(p.date), descricao: p.description, valor: brl(p.amount), parcela: p.installments }));
+      const v = amountDue(c);
+      switch (acao) {
+        case "fatura": return { data: { ...base, fatura }, summary: `fatura ${fatura.valor} vence ${fatura.vencimento}` };
+        case "debitos": return { data: { ...base, debitos, total_a_pagar: brl(v) }, summary: `${debitos.length} débito(s)` };
+        case "limite": return { data: { ...base, limite }, summary: `limite ${limite.disponivel}` };
+        case "compras": return { data: { ...base, compras }, summary: `${compras.length} compra(s)` };
+        case "boleto": { const linha = fakeLinha(d + c.invoice.due, v);
+          const id = attach.add("D", [{ type: "document", filename: `boleto-cartao-tumelero-${c.invoice.due}.pdf`, caption: `2ª via — Cartão Tumelero final ${c.last4}`, boleto: { titular: c.name, cpf: maskCpf(d), final: c.last4, venc: fmtDate(c.invoice.due), valor: brl(v), linha } }, { type: "text", text: `Linha digitável (fictícia, só demonstração):\n${linha}` }]);
+          return { data: { ...base, id, valor: brl(v), vencimento: fmtDate(c.invoice.due) }, summary: `boleto ${brl(v)} gerado` }; }
+        case "pix": { const id = attach.add("D", [{ type: "text", text: fakePix(v, "DEMO" + d.slice(0, 8) + c.invoice.due.replace(/-/g, "")) }]);
+          return { data: { ...base, id, valor: brl(v), dica: "Avise que o código é fictício." }, summary: `pix ${brl(v)} gerado` }; }
+        default: return { data: { ...base, fatura, limite, debitos }, summary: `resumo do cartão final ${c.last4}` };
+      }
+    } },
+  { name: "falar_com_humano",
+    description: "Encaminha para um atendente humano: quando o cliente pedir, reclamação séria, pedido atrasado ou quando você não conseguir resolver.",
+    inputSchema: { type: "object", properties: { motivo: { type: "string" } }, required: ["motivo"] },
+    run({ motivo }) { conv.status = "escalada"; return { data: { ok: true, mensagem: ESCALATION }, summary: `escalada: ${motivo}` }; } },
+  { name: "salvar_dados_cliente",
+    description: "Guarda nome, cidade ou CEP que o cliente informou, para não perguntar de novo. Use assim que ele disser.",
+    inputSchema: { type: "object", properties: { nome: { type: "string" }, cidade: { type: "string" }, cep: { type: "string" } } },
+    run({ nome, cidade, cep }) { const s = []; if (nome) { conv.name = String(nome).trim(); s.push("nome"); } if (cidade) { conv.city = String(cidade).trim(); s.push("cidade"); }
+      if (cep && String(cep).replace(/\D/g, "").length === 8) { conv.cep = String(cep).replace(/\D/g, ""); s.push("cep"); } saveMem(); return { data: { ok: true, salvo: s }, summary: s.length ? `salvou ${s.join(", ")}` : "nada" }; } },
+];
+const TOOL_BY_NAME = Object.fromEntries(TOOLS.map((t) => [t.name, t]));
+
+// ======================================================================
+// Instruções do João (system prompt do projeto, adaptado ao formato JSON)
+// ======================================================================
+const RULES_TEXT = `Você é o João da Obra, mascote e agente de atendimento da Tumelero no WhatsApp. Responda SEMPRE como o João, ao cliente da última mensagem.
+
+# Quem você é
+A Tumelero é uma rede de materiais de construção do Rio Grande do Sul que está fazendo 60 anos. Plataforma de marca: "Ninguém facilita tanto".
+Você é um joão-de-barro: construtor por natureza. Quando alguém tem uma obra pela frente, chama o João. Você conhece o caminho mais fácil: a Tumelero.
+Assinatura (só em despedidas, de vez em quando): "João da Obra. Quem entende de construir, vem pra Tumelero."
+Toda fala sua deixa a obra parecendo mais simples do que parecia antes.
+
+# Como você fala
+- Simples: frases curtas, palavras do dia a dia. Termo técnico só com explicação logo em seguida.
+- Informal, como um vizinho que entende de obra. Alegre e otimista. Cordial: nunca corrige com arrogância.
+- Português do Brasil, com toque gaúcho leve ("bah", "tri") de vez em quando, sem exagero. Metáforas de construtor com moderação.
+- Resolve antes de explicar. Termina mostrando o caminho mais fácil, que é a Tumelero.
+- Evite: termo técnico sem explicação, tom de vendedor insistente, ironia com o erro do cliente, falas longas.
+Bom: "Goteira? Deixa comigo! Quase sempre o problema tá na telha. Bora ver?"  Ruim: "Infiltrações decorrentes de falhas na cobertura exigem diagnóstico técnico."
+
+# Capacidades (use as ferramentas da página)
+1. Produtos (buscar_produtos): no máximo 1 pergunta de esclarecimento, só se essencial. Indique 1 a 3 produtos com uma frase de por que serve; pode sugerir complementos e cores (nome da cor + sensação: "um azul acinzentado, deixa o quarto tranquilão"). Nunca invente preço, estoque ou link. Quando fizer sentido: "Dá pra pagar em até 6x sem juros, Pix ou boleto."
+2. Promoção 60 Anos (sorteio de uma Fiat Strada por mês): dúvidas só com consultar_promocao (não invente regra; se não estiver lá, diga que vai confirmar e ofereça atendente). Cupons sempre com calcular_cupons ("Com essa compra você leva *4 cupons* pro sorteio da Strada! 🚗"). Dia T: ofertas_dia_t_hoje. Cadastro: cadastrar_nota com CPF + NF; números da sorte em negrito.
+3. Loja mais próxima (buscar_loja_proxima) por CEP, cidade ou localização enviada. Se não souber onde o cliente está, peça CEP ou cidade, ou a localização pelo clipe 📎. Se o contexto já tem cidade/CEP, use direto.
+4. Pedido (rastrear_pedido, simulado): peça número ou CPF. Linha do tempo curta com • e previsão. Atrasado: desculpas sinceras + oferecer atendente.
+5. Cartão Tumelero (consultar_cartao_tumelero, simulado): peça CPF e data de nascimento dizendo que é por segurança. NUNCA peça senha, CVV ou número do cartão. Se o cliente mandar, avise com carinho para não compartilhar. "2ª via do cartão" quase sempre é 2ª via da fatura (boleto); cartão físico novo é com atendente.
+6. Falar com humano (falar_com_humano): quando pedir, reclamação séria ou quando não conseguir resolver. Depois responda exatamente: "${ESCALATION}"
+7. Memória: quando o cliente disser nome, cidade ou CEP, chame salvar_dados_cliente. Use o nome com naturalidade.
+
+# Limites
+- Fora do escopo (política, futebol, assuntos pessoais, outras lojas): desvie com bom humor e volte para a obra.
+- Engenharia estrutural (rachadura grande, fundação, alta tensão, gás): não dê parecer; recomende um profissional sem assustar e indique materiais que ajudam depois.
+- O regulamento é provisório e depende de autorização da SPA/MF.
+- LGPD: só peça dado pessoal quando precisar e diga para quê.
+- Pedidos, cartão, boleto, Pix e números da sorte são simulações: deixe claro em boletos e Pix.
+
+# Formato da resposta final (OBRIGATÓRIO)
+Depois de usar as ferramentas que precisar, sua resposta final é SOMENTE um objeto JSON, sem nenhum texto fora dele:
+{"baloes": ["..."], "anexos": ["P1"], "botoes": ["..."], "lista": {"botao": "...", "opcoes": [{"titulo": "...", "descricao": "..."}]}, "intencao": "...", "resolvido": "sim"}
+- baloes: 1 a 4 balões; no máximo 3 frases curtas cada. Formatação do WhatsApp (*negrito*, _itálico_, listas com •). Nada de #, tabelas, **duplo asterisco** ou links [texto](url). No máximo 1 ou 2 emojis por mensagem (🔨🧱🏠🎨🚗🙌).
+- anexos: ids devolvidos pelas ferramentas (P1, L1, D1). Entram depois do 1º balão. O card já mostra nome, preço, link, endereço, horário: não repita esses dados no texto. Com anexos e botões, use pelo menos 2 balões.
+- botoes: até 3 respostas rápidas, cada uma com no máximo 20 caracteres, o próximo passo natural. OU lista (até 10 opções, títulos de até 24 caracteres) quando houver mais escolhas. Nunca os dois.
+- intencao: uma de saudacao, produto, promocao, cupons, dia_t, cadastro_nota, loja, pedido, cartao, humano, fora_escopo, outro.
+- resolvido: "sim", "em_andamento" ou "nao" (não conseguiu ajudar com o que foi pedido).
+- Links só os das ferramentas ou https://www.tumelero.com.br (e /outlet-tumelero, /novidades, /cupom-relampago, /nossas-lojas).`;
+
+function contextBlock(firstContact, sensitive, sentLocation) {
+  const p = localParts(new Date());
+  const l = [`agora: ${WD_PT[p.weekday]}, ${fmtDate(p.date)}, ${p.hh}h${p.mm} (horário de Brasília)`, `canal: simulador web do WhatsApp`,
+    `cliente: nome ${conv.name || "não informado"}; cidade ${conv.city || "não informada"}; CEP ${conv.cep || "não informado"}`];
+  if (firstContact) l.push("primeiro contato: apresente-se em meia frase como João da Obra antes de ajudar");
+  if (sentLocation) l.push("o cliente acabou de enviar a localização: use buscar_loja_proxima com usar_localizacao_enviada=true");
+  if (sensitive.length) l.push(`ATENÇÃO: o cliente mandou ${sensitive.join(", ")} e o sistema apagou antes de chegar aqui. Avise com carinho que nunca deve mandar isso por mensagem e que você não precisa.`);
+  if (conv.failed >= 1) l.push("a última tentativa não resolveu: se não der de novo, ofereça um atendente");
+  return `[contexto]\n${l.map((x) => "- " + x).join("\n")}\n[/contexto]`;
+}
+
+// ======================================================================
+// Motor
+// ======================================================================
+const MAIN_BUTTONS = [{ id: "menu_produto", title: "Achar um produto" }, { id: "menu_promo", title: "Promoção 60 anos 🚗" }, { id: "menu_loja", title: "Loja mais perto" }];
+const WELCOME = "Opa! Aqui é o João da Obra, o joão-de-barro da Tumelero. 🔨 Construir é comigo! Me conta, o que tá precisando hoje?";
+function welcome() {
+  return [{ type: "buttons", text: conv.name ? WELCOME.replace("Opa!", `Opa, ${conv.name}!`) : WELCOME, buttons: MAIN_BUTTONS },
+    { type: "list", text: "Ou escolhe uma destas:", button: "Mais opções", sections: [{ title: "Mais opções", rows: [
+      { id: "menu_pedido", title: "Rastrear pedido", description: "Veja onde está sua compra" },
+      { id: "menu_cartao", title: "Cartão Tumelero", description: "Fatura, limite, boleto e Pix" },
+      { id: "menu_humano", title: "Falar com atendente", description: "Um colega da Tumelero te ajuda" }] }] }];
+}
+const GREETING = /^\s*(oi+e?|ol[aá]+|opa+|e\s*a[ií]|eae|bom\s+dia|boa\s+tarde|boa\s+noite|hey|hello|salve|tudo\s+(bem|bom|certo)|menu|in[ií]cio|come[cç]ar)[\s!.,?]*(jo[aã]o)?[\s!.,?]*$/i;
+
+function msgText(m) {
+  switch (m.type) {
+    case "text": return m.text;
+    case "buttons": return `${m.text}\n[botões: ${m.buttons.map((b) => b.title).join(" | ")}]`;
+    case "list": return `${m.text}\n[lista: ${m.sections[0].rows.map((r) => r.title).join(" | ")}]`;
+    case "product": return `[card: ${m.product.name} — ${brl(m.product.price)}]`;
+    case "location": return `[localização: ${m.name}]`;
+    case "cta": return m.text;
+    case "document": return `[documento: ${m.filename}]`;
+  }
+  return "";
+}
+
+function renderReply(r) {
+  const baloes = (Array.isArray(r.baloes) ? r.baloes : [String(r.baloes || "")]).map((b) => String(b).replace(/\*\*(.+?)\*\*/g, "*$1*").trim()).filter(Boolean).slice(0, 4);
+  if (!baloes.length) baloes.push("Me conta mais um pouquinho?");
+  const anexos = (Array.isArray(r.anexos) ? r.anexos : []).filter((id) => attach.has(id)).flatMap((id) => attach.get(id));
+  const texts = baloes.map((t) => ({ type: "text", text: t }));
+  const out = [...texts.slice(0, 1), ...anexos, ...texts.slice(1)];
+  const botoes = (Array.isArray(r.botoes) ? r.botoes : []).map(String).filter(Boolean).slice(0, 3);
+  const lista = r.lista && Array.isArray(r.lista.opcoes) && r.lista.opcoes.length ? r.lista : null;
+  if (!botoes.length && !lista) return out;
+  let body = "Posso ajudar em mais alguma coisa?";
+  const last = out[out.length - 1];
+  if (last && last.type === "text" && (!anexos.length || texts.length > 1)) { body = last.text; out.pop(); }
+  if (botoes.length) out.push({ type: "buttons", text: body, buttons: botoes.map((t, i) => ({ id: `btn_${i}`, title: clip(t, 20) })) });
+  else out.push({ type: "list", text: body, button: clip(lista.botao || "Ver opções", 20), sections: [{ title: clip(lista.botao || "Opções", 24), rows: lista.opcoes.slice(0, 10).map((o, i) => ({ id: `opt_${i}`, title: clip(o.titulo || o.title || "", 24), description: o.descricao ? clip(o.descricao, 72) : undefined })) }] });
+  return out;
+}
+
+let sample = null, sampleState = "connecting", tier = "quick";
+async function connectClaude() {
+  try {
+    sample = window.claude && window.claude.use ? await window.claude.use("sample") : null;
+    if (sample) { const lim = await sample.limits().catch(() => null); if (lim && !lim.tools) sample = null; }
+  } catch { sample = null; }
+  sampleState = sample ? "claude" : "ensaio";
+  renderEngine();
+}
+
+async function handle(inMsg) {
+  const trace = [];
+  attach = newAttach();
+  const first = conv.history.length === 0;
+  let userText, sensitive = [];
+  if (inMsg.type === "text") { const m = maskSensitive(inMsg.text); userText = m.text; sensitive = m.found; }
+  else if (inMsg.type === "reply") userText = inMsg.title;
+  else { conv.lat = inMsg.lat; conv.lng = inMsg.lng; userText = `📍 [Localização enviada: ${inMsg.name}]`; }
+
+  if (inMsg.type === "start" || (first && inMsg.type === "text" && GREETING.test(inMsg.text))) {
+    const msgs = welcome(); if (inMsg.type !== "start") conv.history.push({ role: "user", content: userText });
+    conv.history.push({ role: "assistant", content: msgs.map(msgText).join("\n") });
+    return { msgs, trace, intent: "saudacao", engine: "fixo" };
+  }
+  conv.history.push({ role: "user", content: userText });
+
+  if (conv.status === "escalada") {
+    let msgs;
+    if (inMsg.type === "reply" && inMsg.id === "voltar_joao") { conv.status = "ativa"; conv.failed = 0; msgs = [{ type: "buttons", text: "Voltei! 🔨 Me conta, no que posso te ajudar?", buttons: MAIN_BUTTONS }]; }
+    else msgs = [{ type: "buttons", text: "Já chamei um colega da Tumelero, tá? Ele vai ler tudo o que tu escreveu aqui. Se preferir, o atendimento geral é o (51) 99811-1390. 🙌", buttons: [{ id: "voltar_joao", title: "Voltar pro João" }] }];
+    conv.history.push({ role: "assistant", content: msgs.map(msgText).join("\n") });
+    return { msgs, trace, intent: "humano", engine: "fixo" };
+  }
+
+  const wasEscalated = conv.status === "escalada";
+  let reply = null, engine = sampleState === "claude" ? "Claude" : "ensaio", error = null;
+  if (sample) {
+    const recent = conv.history.slice(-20);
+    while (recent.length && recent[0].role !== "user") recent.shift();
+    const input = [{ role: "user", content: RULES_TEXT }, ...recent.slice(0, -1), { role: "user", content: `${recent[recent.length - 1].content}\n\n${contextBlock(first, sensitive, inMsg.type === "location")}` }];
+    const tools = TOOLS.map((t) => ({ name: t.name, description: t.description, inputSchema: t.inputSchema, execute: (args) => runTool(t, args || {}, trace) }));
+    try { reply = await sample.json(input, { tools, modelTier: tier }); }
+    catch (e) {
+      error = e && e.code ? e.code : "erro";
+      if (["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed", "tools_unavailable"].includes(error)) { sample = null; sampleState = "ensaio"; renderEngine(); }
+    }
+    if (reply && typeof reply !== "object") reply = null;
+  }
+  if (!reply) {
+    if (sample && error && !["not_granted", "sampling_disabled"].includes(error)) {
+      reply = error === "rate_limited" ? { baloes: ["Bah, muita gente falando comigo agora! 😅 Espera um minutinho e manda de novo?"], intencao: "outro", resolvido: "em_andamento" }
+        : { baloes: ["Bah, deu um probleminha aqui do meu lado. 🧱 Pode mandar de novo?"], botoes: ["Falar com atendente"], intencao: "outro", resolvido: "em_andamento" };
+    } else { engine = "ensaio"; reply = rehearsal(inMsg, userText, trace); }
+  }
+  let msgs = renderReply(reply);
+  const intent = reply.intencao || null;
+  if (reply.resolvido === "nao") conv.failed++; else if (reply.resolvido === "sim") conv.failed = 0;
+  const escalatedNow = !wasEscalated && conv.status === "escalada";
+  if (!escalatedNow && conv.failed >= 2) {
+    conv.status = "escalada"; conv.failed = 0;
+    trace.push({ name: "falar_com_humano", input: { motivo: "automático: 2 tentativas sem resolver" }, ok: true, ms: 0, summary: "escalada automática" });
+    msgs.push({ type: "text", text: ESCALATION });
+  } else if (escalatedNow && !msgs.some((m) => (m.text || "").includes("Vou chamar um colega"))) msgs.push({ type: "text", text: ESCALATION });
+  conv.history.push({ role: "assistant", content: msgs.map(msgText).join("\n") });
+  return { msgs, trace, intent: conv.status === "escalada" && escalatedNow ? "humano" : intent, engine, error };
+}
+
+function runTool(t, args, trace) {
+  const t0 = performance.now();
+  try { const r = t.run(args); trace.push({ name: t.name, input: args, ok: true, ms: Math.round(performance.now() - t0), summary: r.summary, output: r.data }); return r.data; }
+  catch (e) { trace.push({ name: t.name, input: args, ok: false, ms: Math.round(performance.now() - t0), summary: e.message }); throw e; }
+}
+
+// João de ensaio: regras simples, só para quando o Claude não está disponível nesta visualização.
+function rehearsal(inMsg, text, trace) {
+  const call = (name, args) => { try { return runTool(TOOL_BY_NAME[name], args, trace); } catch (e) { return { erro: e.message }; } };
+  const t = fold(text);
+  if (inMsg.type === "location") { const d = call("buscar_loja_proxima", { usar_localizacao_enviada: true }); return lojaReply(d); }
+  if (/goteira|pingando|infiltra|umidade|vazament/.test(t)) { const d = call("buscar_produtos", { termos: ["manta líquida", "impermeabilizante", "telha"] });
+    return { baloes: ["Goteira? Deixa comigo! 🔨 Quase sempre o problema tá no telhado ou na laje. Estes resolvem:", "Dá pra pagar em até 6x sem juros, Pix ou boleto. Quer ver a loja mais perto?"], anexos: (d.produtos || []).slice(0, 3).map((p) => p.id), botoes: ["Loja mais perto", "Falar com atendente"], intencao: "produto", resolvido: "sim" }; }
+  if (/pintar|tinta|cor /.test(t)) { const d = call("buscar_produtos", { termos: ["tinta acrílica", "rolo de pintura", "fita crepe"] });
+    return { baloes: ["Pro quarto do bebê vai bem um *azul acinzentado*: deixa tudo tranquilão. 🎨 Separei a tinta e o básico pra pintar:", "Dá pra pagar em até 6x sem juros, Pix ou boleto."], anexos: (d.produtos || []).slice(0, 3).map((p) => p.id), botoes: ["Loja mais perto", "Outras cores"], intencao: "produto", resolvido: "sim" }; }
+  if (/cupo/.test(t)) { const n = [...text.matchAll(/r\$\s*([\d.,]+)/gi)].map((m) => Number(m[1].replace(/\./g, "").replace(",", ".")));
+    const d = call("calcular_cupons", { valor_total: n[0] || 0, valor_dia_t: n[1] || 0 });
+    return { baloes: [`Com essa compra você leva *${d.cupons} cupons* pro sorteio da Strada! 🚗`, "Quer cadastrar a nota agora?"], botoes: ["Cadastrar nota", "Ofertas do Dia T"], intencao: "cupons", resolvido: "sim" }; }
+  if (/dia t|ofertas/.test(t)) { const d = call("ofertas_dia_t_hoje", {}); return { baloes: ["Olha o que tá no Dia T (conta em dobro pros cupons!):", "Quer ver a loja mais perto?"], anexos: (d.ofertas || []).slice(0, 3).map((o) => o.id), botoes: ["Loja mais perto"], intencao: "dia_t", resolvido: "sim" }; }
+  const cpf = text.match(/\d{3}\.?\d{3}\.?\d{3}-?\d{2}/), nasc = text.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  if (cpf && nasc) { const d = call("consultar_cartao_tumelero", { cpf: cpf[0], data_nascimento: `${nasc[3]}-${nasc[2]}-${nasc[1]}`, acao: "boleto" });
+    if (!d.verificado) return { baloes: ["Hmm, os dados não bateram. Confere o CPF e a data de nascimento?"], intencao: "cartao", resolvido: "em_andamento" };
+    return { baloes: [`Pronto, ${d.titular}! Aqui tá a 2ª via do cartão final ${d.cartao_final}:`, "É um boleto fictício, só pra demonstração. 😉"], anexos: [d.id], botoes: ["Ver limite", "Achar um produto"], intencao: "cartao", resolvido: "sim" }; }
+  const cep = text.match(/\b\d{5}-?\d{3}\b/);
+  if (cep) return lojaReply(call("buscar_loja_proxima", { cep: cep[0] }));
+  const cid = geoByText(text);
+  if (cid && /loja|moro|perto|tem .* ai|aqui em|sou de/.test(t)) return lojaReply(call("buscar_loja_proxima", { cidade_ou_endereco: cid.city }));
+  if (/loja/.test(t)) return { baloes: ["Bora achar! Me manda teu CEP ou a cidade. Se preferir, toca no 📎 e envia a localização."], intencao: "loja", resolvido: "em_andamento" };
+  const ped = text.match(/\b1\d{5}\b/);
+  if (ped) { const d = call("rastrear_pedido", { numero_pedido: ped[0] });
+    if (!d.encontrado) return { baloes: ["Não achei esse pedido. Confere o número pra mim?"], intencao: "pedido", resolvido: "em_andamento" };
+    return { baloes: [`Teu pedido *${d.pedido}*: *${d.status_atual}*${d.atrasado ? ". Desculpa pela demora, de verdade." : "!"}`, `${d.linha_do_tempo.map((x) => "• " + x).join("\n")}\n\nPrevisão: *${d.previsao}*`], botoes: d.atrasado ? ["Falar com atendente"] : ["Achar um produto"], intencao: "pedido", resolvido: "sim" }; }
+  if (/rastrear|pedido/.test(t)) return { baloes: ["Claro! Me passa o número do pedido (tá no e-mail de confirmação) ou o CPF de quem comprou."], intencao: "pedido", resolvido: "em_andamento" };
+  if (/cartao/.test(t)) return { baloes: ["Bora resolver! Por segurança, me passa teu CPF e a data de nascimento?", "Fica tranquilo: nunca vou te pedir senha nem o número do cartão. 🙌"], intencao: "cartao", resolvido: "em_andamento" };
+  if (/atendente|humano|pessoa/.test(t)) { call("falar_com_humano", { motivo: "cliente pediu atendente" }); return { baloes: [ESCALATION], intencao: "humano", resolvido: "sim" }; }
+  if (/promo|strada|sorteio|regulamento/.test(t)) { const d = call("consultar_promocao", { pergunta: text });
+    return { baloes: ["A cada *R$ 300* em compras tu ganha 1 cupom pro sorteio de uma *Fiat Strada 0 km* por mês. 🚗 Produto do Dia T conta em dobro!", "Quer calcular teus cupons ou ver as ofertas do Dia T?"], botoes: ["Calcular cupons", "Ofertas do Dia T"], intencao: "promocao", resolvido: "sim" }; }
+  if (/produto/.test(t)) return { baloes: ["Bora! Me conta o que tu quer fazer na obra que eu acho o material certo. 🧱"], intencao: "produto", resolvido: "em_andamento" };
+  return { baloes: ["Essa eu só consigo responder com o Claude ligado. 😅 Experimenta um dos cenários do modo demo!"], intencao: "outro", resolvido: "em_andamento" };
+}
+function lojaReply(d) {
+  if (!d || !d.encontrado) return { baloes: ["Bah, não achei esse lugar. Me passa o nome da cidade ou o CEP?"], intencao: "loja", resolvido: "em_andamento" };
+  return { baloes: [`A mais pertinho é a *${d.lojas[0].nome}*, a uns ${d.lojas[0].distancia}. 🏠`, "Precisa de mais alguma coisa?"], anexos: d.lojas.map((l) => l.id), botoes: ["Achar um produto", "Promoção 60 anos 🚗"], intencao: "loja", resolvido: "sim" };
+}
+
+// ======================================================================
+// Interface
+// ======================================================================
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const svgNS = "http://www.w3.org/2000/svg";
+const ICON = {
+  reply: '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11Z"/></svg>',
+  list: '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5h2v2H3zm4 0h14v2H7zm-4 6h2v2H3zm4 0h14v2H7zm-4 6h2v2H3zm4 0h14v2H7z"/></svg>',
+  ext: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
+  ticks: '<svg width="16" height="11" viewBox="0 0 16 11" aria-label="lida"><path fill="currentColor" d="M11.07.65 10.4.12a.4.4 0 0 0-.56.07L5.4 5.9 3.53 4.12a.4.4 0 0 0-.56 0l-.6.6a.4.4 0 0 0 0 .56l2.7 2.6a.4.4 0 0 0 .6-.04l5.47-6.62a.4.4 0 0 0-.07-.57Z"/><path fill="currentColor" d="M15.07.65 14.4.12a.4.4 0 0 0-.56.07L9.4 5.9l-.73-.7-.86 1.04 1.25 1.2a.4.4 0 0 0 .6-.04l5.47-6.62a.4.4 0 0 0-.07-.57Z"/></svg>',
+  pin: '<svg class="pin" width="28" height="36" viewBox="0 0 24 32" aria-hidden="true"><path fill="#EA4335" d="M12 0C5.4 0 0 5.2 0 11.7 0 20.4 12 32 12 32s12-11.6 12-20.3C24 5.2 18.6 0 12 0Z"/><circle cx="12" cy="11.5" r="4.5" fill="#fff"/></svg>',
+  brick: '<svg width="44" height="34" viewBox="0 0 44 34" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="2" width="40" height="30" rx="2"/><path d="M2 12h40M2 22h40M16 2v10M30 12v10M12 22v10M28 22v10M22 2v0"/></svg>',
+};
+
+// Formatação do WhatsApp sem HTML cru: *negrito* _itálico_ ~riscado~ ```mono``` e links.
+function waText(parent, text) {
+  const re = /(```[\s\S]+?```|\*[^*\n]+\*|_[^_\n]+_|~[^~\n]+~|https?:\/\/[^\s<>()]+[^\s<>().,!?;:])/g;
+  text.split("\n").forEach((line, i) => {
+    if (i) parent.append(document.createElement("br"));
+    let last = 0;
+    for (const m of line.matchAll(re)) {
+      if (m.index > last) parent.append(line.slice(last, m.index));
+      const t = m[0];
+      if (t.startsWith("```")) parent.append(el("code", null, t.slice(3, -3)));
+      else if (t[0] === "*") { const s = el("strong"); waText(s, t.slice(1, -1)); parent.append(s); }
+      else if (t[0] === "_") { const s = el("em"); waText(s, t.slice(1, -1)); parent.append(s); }
+      else if (t[0] === "~") parent.append(el("s", null, t.slice(1, -1)));
+      else { const a = el("a", "lnk", t); a.href = t; a.target = "_blank"; a.rel = "noopener noreferrer"; parent.append(a); }
+      last = m.index + t.length;
+    }
+    if (last < line.length) parent.append(line.slice(last));
+  });
+}
+const nowHM = () => new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+function meta(mine) { const m = el("span", "meta", nowHM()); if (mine) m.insertAdjacentHTML("beforeend", ICON.ticks); return m; }
+let lastFrom = null;
+function addBubble(from, node) {
+  const row = el("div", "row" + (lastFrom && lastFrom !== from ? " gap" : ""));
+  node.classList.add("b", from === "user" ? "out" : "in");
+  if (lastFrom !== from) node.classList.add("tail");
+  lastFrom = from; row.append(node); $("msgs").append(row);
+  $("log").scrollTo({ top: $("log").scrollHeight, behavior: "smooth" });
+}
+function actionBtn(html, label, onClick, href) {
+  const b = href ? el("a", "act") : el("button", "act");
+  if (href) { b.href = href; b.target = "_blank"; b.rel = "noopener noreferrer"; } else { b.type = "button"; b.onclick = onClick; }
+  b.innerHTML = html; b.append(label); return b;
+}
+function mapBox() {
+  const m = el("div", "map");
+  m.innerHTML = '<svg class="streets" viewBox="0 0 280 128" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="280" height="128" fill="#ece6da"/><path d="M0 40h280M0 92h280M60 0v128M150 0v128M220 0v128" stroke="#fff" stroke-width="9"/><path d="M0 116 120 60l160-36" stroke="#f7d774" stroke-width="10" fill="none"/><path d="M0 116 120 60l160-36" stroke="#e9c35a" stroke-width="1" fill="none"/><rect x="72" y="50" width="62" height="30" fill="#d8ecd0"/><rect x="164" y="102" width="44" height="22" fill="#d6e4f2"/></svg>' + ICON.pin;
+  return m;
+}
+function renderOut(m) {
+  const b = el("div");
+  switch (m.type) {
+    case "text": { const p = el("div", "pad"); waText(p, m.text); p.append(meta()); b.append(p); break; }
+    case "buttons": { const p = el("div", "pad"); waText(p, m.text); p.append(meta()); b.append(p);
+      m.buttons.forEach((x) => b.append(actionBtn(ICON.reply, x.title, () => send({ type: "reply", id: x.id, title: x.title })))); break; }
+    case "list": { const p = el("div", "pad"); waText(p, m.text); p.append(meta()); b.append(p); b.append(actionBtn(ICON.list, m.button, () => openList(m))); break; }
+    case "product": { const c = el("div", "card"), th = el("div", "thumb"); th.innerHTML = ICON.brick; th.append(el("span", null, m.product.category || "Tumelero")); c.append(th);
+      const p = el("div", "pad"); if (m.product.badge) p.append(el("span", "badge", m.product.badge));
+      p.append(el("div", null, m.product.name)); p.lastChild.style.fontWeight = "600";
+      const pr = el("div", "price"); if (m.product.listPrice && m.product.listPrice > m.product.price) pr.append(el("s", null, brl(m.product.listPrice))); pr.append(el("b", null, brl(m.product.price))); p.append(pr);
+      p.append(el("div", "site", "tumelero.com.br")); p.append(meta()); c.append(p); c.append(actionBtn(ICON.ext, "Ver no site", null, m.product.link)); b.append(c); break; }
+    case "location": { const a = el("a", "card"); a.href = `https://www.google.com/maps?q=${m.lat},${m.lng}`; a.target = "_blank"; a.rel = "noopener noreferrer"; a.style.display = "block"; a.style.textDecoration = "none";
+      a.append(mapBox()); const p = el("div", "pad"); p.append(el("div", "place", m.name)); p.append(el("div", "addr", m.address)); p.append(meta()); a.append(p); b.append(a); break; }
+    case "cta": { const p = el("div", "pad"); waText(p, m.text); p.append(meta()); b.append(p); b.append(actionBtn(ICON.ext, m.label, null, m.url)); break; }
+    case "document": { const p = el("div", "pad"), d = el("button", "doc"); d.type = "button"; d.onclick = () => openBoleto(m.boleto);
+      d.append(el("span", "pdf", "PDF")); const s = el("span"); s.append(el("span", "fn", m.filename)); s.append(el("span", "sz", "PDF · toque para abrir")); d.append(s); p.append(d);
+      if (m.caption) p.append(el("div", null, m.caption)); p.append(meta()); b.append(p); break; }
+  }
+  if (["product", "location", "buttons", "list", "cta"].includes(m.type)) b.style.overflow = "hidden";
+  addBubble("joao", b);
+}
+function renderUser(m) {
+  const b = el("div");
+  if (m.type === "location") { const a = el("div", "card"); a.append(mapBox()); const p = el("div", "pad", m.name); p.append(meta(true)); a.append(p); b.append(a); b.style.overflow = "hidden"; }
+  else { const p = el("div", "pad", m.type === "text" ? m.text : m.title); p.style.whiteSpace = "pre-wrap"; p.append(meta(true)); b.append(p); }
+  addBubble("user", b);
+}
+let typingRow = null;
+function setTyping(on) {
+  $("status").textContent = on ? "digitando…" : "online";
+  if (on && !typingRow) { typingRow = el("div", "row" + (lastFrom === "user" ? " gap" : "")); const b = el("div", "b in tail typing"); b.setAttribute("aria-label", "João está digitando"); b.innerHTML = "<i></i><i></i><i></i>"; typingRow.append(b); $("msgs").append(typingRow); $("log").scrollTo({ top: $("log").scrollHeight, behavior: "smooth" }); }
+  if (!on && typingRow) { typingRow.remove(); typingRow = null; }
+}
+
+// Fila: o cliente pode mandar várias mensagens seguidas; o João responde uma por vez.
+let queue = Promise.resolve();
+function send(m) {
+  if (m.type !== "start") renderUser(m);
+  queue = queue.then(() => turn(m));
+}
+async function turn(m) {
+  setTyping(true);
+  const t0 = performance.now();
+  const r = await handle(m);
+  const ms = Math.round(performance.now() - t0);
+  logTurn(m.type === "start" ? "início da conversa" : m.type === "text" ? m.text : m.type === "reply" ? `[botão] ${m.title}` : `[localização] ${m.name}`, r, ms);
+  for (let i = 0; i < r.msgs.length; i++) { if (i) { setTyping(true); await new Promise((res) => setTimeout(res, 550)); } setTyping(false); renderOut(r.msgs[i]); }
+  setTyping(false);
+}
+
+function openList(m) {
+  const bg = $("sheetBg"); bg.replaceChildren(); bg.hidden = false;
+  const sh = el("div", "sheet"); sh.onclick = (e) => e.stopPropagation(); bg.onclick = () => (bg.hidden = true);
+  const h = el("h3", null, m.button); const x = el("button", "icon-btn", "✕"); x.type = "button"; x.setAttribute("aria-label", "Fechar"); x.style.color = "#54656f"; x.onclick = () => (bg.hidden = true); h.prepend(x); sh.append(h);
+  const go = el("button", "go", "Enviar"); go.type = "button"; go.disabled = true; let sel = null;
+  m.sections.forEach((s) => { const fs = el("fieldset"); fs.append(el("legend", null, s.title));
+    s.rows.forEach((r, i) => { const lb = el("label"); const sp = el("span", null, r.title); if (r.description) sp.append(el("small", null, r.description)); const inp = el("input"); inp.type = "radio"; inp.name = "listopt"; inp.id = "opt" + i; inp.onchange = () => { sel = r; go.disabled = false; }; lb.append(sp, inp); fs.append(lb); });
+    sh.append(fs); });
+  go.onclick = () => { bg.hidden = true; if (sel) send({ type: "reply", id: sel.id, title: sel.title }); };
+  sh.append(go); bg.append(sh);
+}
+function openBoleto(b) {
+  const bg = $("sheetBg"); bg.replaceChildren(); bg.hidden = false; bg.onclick = () => (bg.hidden = true);
+  const box = el("div", "boleto"); box.onclick = (e) => e.stopPropagation();
+  const h = el("header"); h.append(el("b", null, "tumelero")); h.append(el("span", null, "Cartão Tumelero — 2ª via")); box.append(h);
+  box.append(el("div", "warn", "DOCUMENTO FICTÍCIO — DEMONSTRAÇÃO. NÃO PAGUE."));
+  const dl = el("dl"); [["Titular", b.titular], ["CPF", b.cpf], ["Cartão", `final ${b.final}`], ["Vencimento", b.venc], ["Valor", b.valor]].forEach(([k, v]) => { dl.append(el("dt", null, k), el("dd", null, v)); }); box.append(dl);
+  box.append(el("div", "linha", b.linha)); box.append(el("div", "bars"));
+  const f = el("footer"); f.append(el("span", null, "Gerado pelo João da Obra. Ninguém facilita tanto.")); const c = el("button", null, "Fechar"); c.type = "button"; c.onclick = () => (bg.hidden = true); f.append(c); box.append(f);
+  bg.append(box);
+}
+
+// ---------- Painel do modo demo ----------
+const SCENARIOS = [
+  ["Goteira no banheiro", "Tá pingando água do teto do banheiro, o que eu faço?"],
+  ["Quarto do bebê", "Quero pintar o quarto do bebê, que cor e qual tinta?"],
+  ["Cupons do Dia T", "Comprei R$ 950, sendo R$ 300 em oferta do Dia T. Quantos cupons eu ganho?"],
+  ["Loja por CEP", "Qual a loja mais perto do CEP 93010-001?"],
+  ["Rastrear pedido", "Cadê meu pedido 100234?"],
+  ["2ª via do cartão", "Quero a segunda via do meu cartão Tumelero."],
+  ["Loja por cidade", "Moro em Novo Hamburgo, tem loja aí?"],
+];
+const TEST_DATA = [["Cartão Tumelero", "CPF 123.456.789-09 · nasc. 15/03/1985"], ["Cartão com fatura vencida", "CPF 321.654.987-91 · nasc. 28/07/1990"], ["Pedidos", "100231 a 100240 (100236 e 100240 atrasados)"], ["Cadastrar nota", "qualquer CPF válido + qualquer número de NF"]];
+const PRESETS = [["Centro de Novo Hamburgo", -29.6876, -51.1306], ["Centro de Porto Alegre", -30.0277, -51.2287], ["Canoas", -29.9178, -51.1839], ["Tramandaí (praia)", -29.9847, -50.1336]];
+const TOOL_ICON = { buscar_produtos: "🔎", consultar_promocao: "📜", calcular_cupons: "🧮", ofertas_dia_t_hoje: "🏷️", cadastrar_nota: "🎟️", buscar_loja_proxima: "📍", rastrear_pedido: "🚚", consultar_cartao_tumelero: "💳", falar_com_humano: "🙋", salvar_dados_cliente: "🧠" };
+function renderEngine() {
+  const e = $("engine"); e.replaceChildren();
+  if (sampleState === "connecting") e.append("Conectando ao Claude…");
+  else if (sampleState === "claude") { e.append("Cérebro: "); e.append(el("b", null, "Claude")); e.append(" (pela sua conta do claude.ai). Ferramentas e dados rodam aqui na página."); }
+  else { e.append("Cérebro: "); e.append(el("b", null, "João de ensaio")); e.append(" (regras simples). Abra esta página no claude.ai e permita o uso do Claude para conversar com o João de verdade."); }
+}
+function logTurn(label, r, ms) {
+  const logs = $("logs"); if (logs.querySelector(".empty")) logs.replaceChildren();
+  const a = el("article", "turn"); const h = el("div", "turn-h"); h.append(el("div", null, `“${clip(label, 90)}”`)); h.append(el("span", null, `${(ms / 1000).toFixed(1)}s`)); a.append(h);
+  const tags = el("div", "tags");
+  tags.append(el("span", "tag", r.engine === "Claude" ? "Claude" : r.engine === "fixo" ? "mensagem fixa" : "ensaio"));
+  if (r.intent) tags.append(el("span", "tag i", `intenção: ${r.intent}`));
+  if (conv.status === "escalada") tags.append(el("span", "tag e", "escalada p/ humano"));
+  if (r.error) tags.append(el("span", "tag x", `erro: ${r.error}`));
+  if (!r.trace.length) tags.append(el("span", "tag", "sem ferramentas"));
+  a.append(tags);
+  r.trace.forEach((t, i) => {
+    const d = el("details", "tool"); if (i === 0) d.open = true;
+    const s = el("summary"); s.append(`${TOOL_ICON[t.name] || "🔧"} `); s.append(el("code", null, t.name)); s.append(" "); s.append(el("span", t.ok ? "ok" : "err", t.ok ? "ok" : "erro")); s.append(el("span", "sum", t.summary || "")); d.append(s);
+    d.append(el("div", "lbl", "parâmetros")); d.append(el("pre", "p", JSON.stringify(t.input, null, 2)));
+    if (t.output !== undefined) { d.append(el("div", "lbl", "resultado")); d.append(el("pre", "r", JSON.stringify(t.output, null, 2))); }
+    a.append(d);
+  });
+  logs.prepend(a);
+}
+
+// ---------- Ligações ----------
+function openChat() { $("landing").hidden = true; $("chat").hidden = false; document.body.style.background = "#d1d7db";
+  if (!$("msgs").children.length) send({ type: "start" }); setTimeout(() => $("msg").focus(), 50); }
+$("start").onclick = openChat;
+$("back").onclick = () => { $("chat").hidden = true; $("landing").hidden = false; document.body.style.background = ""; };
+$("restart").onclick = () => { queue = queue.then(() => { conv = freshConv(); conv.history = []; $("msgs").replaceChildren(); lastFrom = null; $("logs").replaceChildren(el("p", "empty", "As chamadas de ferramenta aparecem aqui.")); }); send({ type: "start" }); };
+const isWide = () => window.matchMedia("(min-width: 1024px)").matches;
+if (!isWide()) $("panel").classList.remove("on");
+$("demoToggle").onclick = () => { const on = $("panel").classList.toggle("on"); $("demoToggle").setAttribute("aria-pressed", String(on)); };
+$("panelClose").onclick = () => { $("panel").classList.remove("on"); $("demoToggle").setAttribute("aria-pressed", "false"); };
+$("msg").oninput = () => ($("send").disabled = !$("msg").value.trim());
+$("composer").onsubmit = (e) => { e.preventDefault(); const t = $("msg").value.trim(); if (!t) return; $("msg").value = ""; $("send").disabled = true; send({ type: "text", text: t }); };
+$("tierQuick").onclick = () => { tier = "quick"; $("tierQuick").setAttribute("aria-pressed", "true"); $("tierDefault").setAttribute("aria-pressed", "false"); };
+$("tierDefault").onclick = () => { tier = "default"; $("tierDefault").setAttribute("aria-pressed", "true"); $("tierQuick").setAttribute("aria-pressed", "false"); };
+SCENARIOS.forEach(([label, text], i) => { const b = el("button", "chip", `${i + 1}. ${label}`); b.type = "button"; b.title = text; b.onclick = () => { if (!isWide()) $("panel").classList.remove("on"); send({ type: "text", text }); }; $("scenarios").append(b); });
+TEST_DATA.forEach(([k, v]) => { const li = el("li"); li.append(el("strong", null, k + ": ")); li.append(v); $("testData").append(li); });
+const menu = $("locMenu");
+menu.append(el("p", null, "📍 Enviar localização (simulada)"));
+PRESETS.forEach(([name, lat, lng]) => { const b = el("button", null, name); b.type = "button"; b.setAttribute("role", "menuitem"); b.onclick = () => { menu.hidden = true; $("clip").setAttribute("aria-expanded", "false"); send({ type: "location", lat, lng, name }); }; menu.append(b); });
+$("clip").onclick = () => { menu.hidden = !menu.hidden; $("clip").setAttribute("aria-expanded", String(!menu.hidden)); };
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") { $("sheetBg").hidden = true; menu.hidden = true; } });
+try { if (window.QRCode) new QRCode($("qr"), { text: `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Oi, João!")}`, width: 84, height: 84, colorDark: "#1E2A4A", colorLight: "#FFFFFF" }); } catch {}
+if (location.hash === "#chat") openChat();
+renderEngine();
+connectClaude();
+</script>

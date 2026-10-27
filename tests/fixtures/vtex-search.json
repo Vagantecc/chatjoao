@@ -1,0 +1,122 @@
+[
+  {
+    "productId": "5042917",
+    "productName": "Manta Líquida Vedalage Branco Viapol",
+    "brand": "Viapol",
+    "link": "https://www.tumelero.com.br/manta-liquida-vedalage-branco-viapol/p",
+    "linkText": "manta-liquida-vedalage-branco-viapol",
+    "categories": [
+      "/Materiais de Construção/Impermeabilizantes/Mantas Líquidas/",
+      "/Materiais de Construção/Impermeabilizantes/",
+      "/Materiais de Construção/"
+    ],
+    "description": "<h2>Manta Líquida Vedalage Branco Viapol - Alta Proteção, Conforto Térmico e Fácil Aplicação</h2>\n\n<p>A <strong>Manta Líquida Vedalage Branco Viapol</strong> é indicada para impermeabilizar áreas expo",
+    "items": [
+      {
+        "itemId": "5042917",
+        "name": "18Kg",
+        "images": [
+          {
+            "imageUrl": "https://tumelerosaintgobain.vteximg.com.br/arquivos/ids/292764/manta-liquida-vedalage-branco-viapol-1.jpg?v=639202553921600000",
+            "imageLabel": ""
+          }
+        ],
+        "sellers": [
+          {
+            "sellerId": "1",
+            "sellerName": "Tumelero",
+            "commertialOffer": {
+              "Price": 259.9,
+              "ListPrice": 299.9,
+              "PriceWithoutDiscount": 259.9,
+              "AvailableQuantity": 99999,
+              "IsAvailable": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "productId": "2575027",
+    "productName": "Manta Liquída Com Fibras 6 Quartzolit",
+    "brand": "Quartzolit",
+    "link": "https://www.tumelero.com.br/manta-liquida-com-fibras-6-quartzolit--2575027-1/p",
+    "linkText": "manta-liquida-com-fibras-6-quartzolit--2575027-1",
+    "categories": [
+      "/Materiais de Construção/Impermeabilizantes/Mantas Líquidas/",
+      "/Materiais de Construção/Impermeabilizantes/",
+      "/Materiais de Construção/"
+    ],
+    "description": "Manta Liquída Com Fibras 6 Quartzolit",
+    "items": [
+      {
+        "itemId": "2575027",
+        "name": "Manta Liquída Com Fibras 6 Quartzolit",
+        "images": [
+          {
+            "imageUrl": "https://tumelerosaintgobain.vteximg.com.br/arquivos/ids/215433/789417429911-6.jpg.jpg?v=638826591379730000",
+            "imageLabel": ""
+          }
+        ],
+        "sellers": [
+          {
+            "sellerId": "1",
+            "sellerName": "Tumelero",
+            "commertialOffer": {
+              "Price": 369.9,
+              "ListPrice": 369.9,
+              "PriceWithoutDiscount": 369.9,
+              "AvailableQuantity": 10,
+              "IsAvailable": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "productId": "999",
+    "productName": "Produto Sem Estoque Teste",
+    "brand": "Viapol",
+    "link": "https://www.tumelero.com.br/manta-liquida-vedalage-branco-viapol/p",
+    "linkText": "manta-liquida-vedalage-branco-viapol",
+    "categories": [
+      "/Materiais de Construção/Impermeabilizantes/Mantas Líquidas/",
+      "/Materiais de Construção/Impermeabilizantes/",
+      "/Materiais de Construção/"
+    ],
+    "description": "<h2>Manta Líquida Vedalage Branco Viapol - Alta Proteção, Conforto Térmico e Fácil Aplicação</h2>\n\n<p>A <strong>Manta Líquida Vedalage Branco Viapol</strong> é indicada para impermeabilizar áreas expo",
+    "items": [
+      {
+        "itemId": "5042917",
+        "name": "18Kg",
+        "images": [
+          {
+            "imageUrl": "https://tumelerosaintgobain.vteximg.com.br/arquivos/ids/292764/manta-liquida-vedalage-branco-viapol-1.jpg?v=639202553921600000",
+            "imageLabel": ""
+          }
+        ],
+        "sellers": [
+          {
+            "sellerId": "1",
+            "sellerName": "Tumelero",
+            "commertialOffer": {
+              "Price": 0,
+              "ListPrice": 299.9,
+              "PriceWithoutDiscount": 259.9,
+              "AvailableQuantity": 0,
+              "IsAvailable": true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "productId": "998",
+    "productName": "Produto Sem Itens",
+    "link": "https://www.tumelero.com.br/x/p",
+    "items": []
+  }
+]
